@@ -27,17 +27,17 @@ func readPasteBuffer(term *os.File) ([]byte, error) {
 	}
 
 	buffer := []byte{}
-	chbuf := make([]byte, 1)
+	rdbuf := make([]byte, 1024)
 	for {
-		_, err := term.Read(chbuf)
+		rdlen, err := term.Read(rdbuf)
 		if err != nil {
 			return nil, err
 		}
-		ch := chbuf[0]
-		if ch == 007 {
+		if rdbuf[rdlen-1] == 007 {
+			buffer = append(buffer, rdbuf[:rdlen-1]...)
 			break
 		}
-		buffer = append(buffer, ch)
+		buffer = append(buffer, rdbuf[:rdlen]...)
 	}
 
 	return buffer, nil
